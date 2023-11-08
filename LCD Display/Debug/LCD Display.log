@@ -1,0 +1,7 @@
+﻿  main.cpp
+C:\Users\Ngoma\source\repos\LCD Display\main.cpp(264,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Ngoma\source\repos\LCD Display\main.cpp(263,10): warning C4101: 'has_invalid_char': unreferenced local variable
+C:\Users\Ngoma\source\repos\LCD Display\main.cpp(289,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Ngoma\source\repos\LCD Display\main.cpp(298,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Ngoma\source\repos\LCD Display\main.cpp(299,27): warning C4018: '<': signed/unsigned mismatch
+  LCD Display.vcxproj -> C:\Users\Ngoma\source\repos\LCD Display\Debug\LCD Display.exe
