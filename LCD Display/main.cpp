@@ -28,7 +28,7 @@ int main() {
     return 0;
 }
 
-void create_map_from_data_and_display(std::vector<std::string> data) {
+void create_map_from_data_and_display(std::vector<std::string>& data) {
 
     for (std::string& some_data : data) {
 
@@ -181,7 +181,7 @@ void write_char_to_map(std::vector<std::vector<char>>& dest_map, char& c, int in
 //A number has different parts (eg a '1' has two vertical parts and a '5' has two vertical parts and three horizontal parts)
 // This method draws a single part of a number to a position on the map designated by the row and the start_point
 //Draws a part of a number (eg the upper part of a number)
-//segemnt_type determines the pattern of the part of the number:
+//segemnt_type determines the pattern of the part of the number, the supported segments are:
 //1 - ' --- '
 //2 - '     '
 //3 - '|    '
@@ -236,7 +236,7 @@ void draw_number_segment(std::vector<std::vector<char>>& dest_map, int segment_t
     }
 }
 
-//Prompt the user for input until the user enters '0', then return the input
+//Prompt the user for input until the user enters '0 0', then return the input
 std::vector<std::string> prompt_input() {
     std::string input_line;
     std::vector<std::string> input;
@@ -276,7 +276,7 @@ bool is_input_line_valid(std::string& input_line) {
     return false;
 }
 
-//Checkk if c is a number
+//Checks if c is a character that can be converted to a number
 bool is_number(char c) {
     char numbers[] = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
     for (char& number : numbers) {
@@ -284,7 +284,7 @@ bool is_number(char c) {
     }
     return false;
 }
-//Removes the part of the string that specifies what the size of the numbers in the display will be
+//Removes the part of the string that specifies what the size of the numbers
 void remove_size_part(std::string& some_data) {
     for (int i = 0; i < some_data.length(); i++) {
         if (some_data[i] == ' ') {
