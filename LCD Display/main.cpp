@@ -4,13 +4,13 @@
 
 //Methods
 std::vector<std::string> prompt_input();
-void create_map_from_data_and_display(std::vector<std::string> theData);
-void write_some_data_to_map(std::vector<std::vector<char>>& dest_map, std::string& some_data);
+void create_map_from_data_and_display(std::vector<std::string>& theData);
+void write_line_to_map(std::vector<std::vector<char>>& dest_map, std::string& some_data);
 void write_char_to_map(std::vector<std::vector<char>>& dest_map, char&, int startPoint);
 void draw_number_segment(std::vector<std::vector<char>>& dest_map, int segment_type, int row);
 void remove_size_part(std::string& some_data);
 void display();
-bool is_input_line_valid(std::string& input_line);
+bool is_valid(std::string& s);
 bool is_number(char c);
 
 //Attributes
@@ -20,6 +20,8 @@ int width;
 int height;
 std::vector<std::string> all_data;
 std::vector<std::vector<char>> map;
+
+char numbers[] = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
 
 int main() {
     all_data = prompt_input();
@@ -32,7 +34,8 @@ void create_map_from_data_and_display(std::vector<std::string>& data) {
 
     for (std::string& some_data : data) {
 
-        sizeOfDigit = atoi(&std::string(some_data, 0, 1)[0]);
+        int endOfSize = some_data.rfind(' ');
+        sizeOfDigit = atoi(&std::string(some_data, 0, endOfSize)[0]);
 
         remove_size_part(some_data);
 
@@ -41,15 +44,16 @@ void create_map_from_data_and_display(std::vector<std::string>& data) {
 
         map = std::vector<std::vector<char>>(height, std::vector<char>(width));
 
-        write_some_data_to_map(map, some_data);
+        write_line_to_map(map, some_data);
 
         display();
+
     }
 }
 
 //This writes an entire string to the map, character by character, it also passes the index of the character as an argument to write_to_char so that
-//the write_to_char method should calculate start_point so that different characters are written on different locations on the map
-void write_some_data_to_map(std::vector<std::vector<char>>& dest_map, std::string& some_data) {
+//the method should calculate start_point so it knows exactly where on the map to write each of the parts of the character, check the readme for more clarification
+void write_line_to_map(std::vector<std::vector<char>>& dest_map, std::string& some_data) {
     for (unsigned int i = 0; i < some_data.length(); i++) {
         write_char_to_map(dest_map, some_data[i], i);
     }
@@ -181,7 +185,7 @@ void write_char_to_map(std::vector<std::vector<char>>& dest_map, char& c, int in
 //A number has different parts (eg a '1' has two vertical parts and a '5' has two vertical parts and three horizontal parts)
 // This method draws a single part of a number to a position on the map designated by the row and the start_point
 //Draws a part of a number (eg the upper part of a number)
-//segemnt_type determines the pattern of the part of the number, the supported segments are:
+//segemnt_type determines the pattern of the part of the number:
 //1 - ' --- '
 //2 - '     '
 //3 - '|    '
@@ -236,55 +240,41 @@ void draw_number_segment(std::vector<std::vector<char>>& dest_map, int segment_t
     }
 }
 
-//Prompt the user for input until the user enters '0 0', then return the input
+//Prompt the user for input until the user enters two seperated zeros, then return the input
 std::vector<std::string> prompt_input() {
     std::string input_line;
     std::vector<std::string> input;
+    std::string size, number;
     while (true) {
-        //I use getline insted of 'cin << temp' because the when you type, say, 3 564432, the 'cin << temp' reads this as two seperate lines of input '3' and '564432'
-        //this makes the implementation of 'create_map_from_data_and_dispaly' harder, so getline should be used so that the entire '3 564432' is read as a simgle line of input
-        std::getline(std::cin, input_line);
-        if (!is_input_line_valid(input_line)) {
-            std::cout << "\tUsage: [size of number(s)] [number(s)]\n\tenter '0 0' to stop entering and see results\n";
-            break;
-            EXIT_FAILURE;
+        std::cin >> size;
+        std::cin >> number;
+        if ((!is_valid(size)) || (!is_valid(number))) {
+            std::cout << "\tUsage: [size of number(s)] [number(s)]\n\tLetters not allowed\n\tenter '0 0' to stop entering and see results\n";
+            exit(EXIT_FAILURE);           
         }
-        if (input_line == "0 0") break;
+        input_line = size + " " + number;
+        if (size == "0" && number == "0") break;
         input.push_back(input_line);
     }
     return input;
 }
 
 //Check input_line to make sure it's in the right format and doesn't contain any letters
-bool is_input_line_valid(std::string& input_line) {
-    bool has_size = false;
-    bool has_space = false;
-    bool has_number = false;
-    bool has_invalid_char;
-    for (int i = 0; i < input_line.length(); i++) {
-        if (input_line[i] == ' ') has_space = true;
-        if (has_space) {
-            if (is_number(input_line[i - 1]) && is_number(input_line[i + 1])) {
-                has_number = true;
-                has_size = true;
-            }
-        }
+bool is_valid(std::string& s) {
+    for (char& c : s) {
+        if (!is_number(c)) return false;
     }
-    if (has_number && has_size && has_space) {
-        return true;
-    }
-    return false;
+    return true;
 }
 
-//Checks if c is a character that can be converted to a number
+//Check if c is a number
 bool is_number(char c) {
-    char numbers[] = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
     for (char& number : numbers) {
         if (c == number) return true;
     }
     return false;
 }
-//Removes the part of the string that specifies what the size of the numbers
+//Removes the part of the string that specifies what the size of the numbers in the display will be
 void remove_size_part(std::string& some_data) {
     for (int i = 0; i < some_data.length(); i++) {
         if (some_data[i] == ' ') {
